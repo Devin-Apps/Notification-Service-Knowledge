@@ -1,0 +1,39 @@
+{
+  "family": "notification-service-task",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "executionRoleArn": "arn:aws:iam::339713009115:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "name": "notification-service-container",
+      "image": "339713009115.dkr.ecr.us-west-2.amazonaws.com/notification-service-knowledge:${github.sha}",
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "hostPort": 8080,
+          "protocol": "tcp"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "TWILIO_ACCOUNT_SID",
+          "valueFrom": "arn:aws:secretsmanager:us-west-2:339713009115:secret:twilio-credentials:ACCOUNT_SID::"
+        },
+        {
+          "name": "TWILIO_AUTH_TOKEN",
+          "valueFrom": "arn:aws:secretsmanager:us-west-2:339713009115:secret:twilio-credentials:AUTH_TOKEN::"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/notification-service",
+          "awslogs-region": "us-west-2",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ]
+}
